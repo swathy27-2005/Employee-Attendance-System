@@ -1,0 +1,15 @@
+{
+  "attendance_dashboard": "Employee Attendance Dashboard",
+  "view_report": "View Report",
+  "dashboard": "Dashboard",
+  "manual_marking": "Manual Marking",
+  "home": "Home",
+  "logout": "Logout",
+  "welcome_message": "Welcome to the Employee Attendance Dashboard",
+  "punctuality_badges": "Punctuality Badges",
+  "no_badges": "No badges earned yet.",
+  "attendance_heatmap": "Attendance Heatmap",
+  "punctuality_score": "Punctuality Score",
+  "monthly_attendance": "Monthly Attendance",
+  "footer": "© 2025 T-MILLS KAPPALOOR. All Rights Reserved."
+}
