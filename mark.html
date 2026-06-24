@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Manual Attendance Mark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #e0e7ff;
+      --surface: #ffffff;
+      --surface-secondary: #f8fafc;
+      --border: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      --surface: #1e2130;
+      --surface-secondary: #151722;
+      --border: #2d3148;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --primary-light: #1e2051;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      height: 60px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .brand-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    .nav-select {
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+    }
+
+    .page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .card-header .icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .card-header .icon-wrap svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--primary);
+    }
+
+    .card-header h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 13.5px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--surface-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      color: white;
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-bottom: 14px;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:active { transform: scale(0.99); }
+
+    .back-link {
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .back-link a {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .back-link a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 14px 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        padding: 12px;
+        gap: 4px;
+        z-index: 99;
+      }
+      .nav-links.active { display: flex; }
+      .nav-links a { padding: 10px 12px; }
+      .navbar { position: relative; }
+      .card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body class="light">
+
+<nav class="navbar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+      </svg>
+    </div>
+    <a href="/" class="brand-name" id="navbar-title">T-MILLS KAPPALOOR</a>
+  </div>
+
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <div class="nav-links" id="nav-links">
+    <a href="/" id="home-link">Home</a>
+    <a href="/report" id="view-report-link">View Report</a>
+    <a href="/dashboard" id="dashboard-link">Dashboard</a>
+    <a href="/mark" id="manual-link">Manual Marking</a>
+    <select class="nav-select" id="language-selector" onchange="changeLanguage(event)">
+      <option value="en">English</option>
+      <option value="ta">தமிழ்</option>
+    </select>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-wrap">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13zm-7-11c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm.5 7.5h-1v-4h1v4zm0-5.5h-1V10h1v1.5z"/>
+        </svg>
+      </div>
+      <h1 id="manual-attendance-title">Manual Attendance</h1>
+    </div>
+
+    <form method="POST" action="/mark">
+      <div class="form-group">
+        <input type="text" name="mark_emp_id" id="emp-id" placeholder="Employee ID" required>
+      </div>
+      <div class="form-group">
+        <input type="text" name="mark_emp_name" id="emp-name" placeholder="Employee Name" required>
+      </div>
+      <div class="form-group">
+        <select name="mark_shift" id="emp-shift" required>
+          <option value="8 AM - 4:30 PM">8 AM - 4:30 PM</option>
+          <option value="4:30 PM - 1 AM">4:30 PM - 1 AM</option>
+          <option value="1 AM - 8 AM">1 AM - 8 AM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="date" name="mark_date" required>
+      </div>
+      <div class="form-group">
+        <select name="mark_status" id="emp-status" required>
+          <option value="P">Present</option>
+          <option value="A">Absent</option>
+          <option value="CL">Casual Leave</option>
+          <option value="PL">Paid Leave</option>
+          <option value="WO">Weekly Off</option>
+        </select>
+      </div>
+      <button class="btn-primary" type="submit" id="mark-attendance-button">Mark Attendance</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/" id="back-to-home-link">← Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<footer><span id="footer-text">&copy; 2025 T-MILLS KAPPALOOR. All rights reserved.</span></footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('nav-links').classList.toggle('active');
+  }
+
+  const translations = {
+    en: {
+      "page-title": "Manual Attendance Mark",
+      "navbar-title": "T-MILLS KAPPALOOR",
+      "home-link": "Home",
+      "view-report-link": "View Report",
+      "dashboard-link": "Dashboard",
+      "manual-link": "Manual Marking",
+      "manual-attendance-title": "Manual Attendance",
+      "emp-id": "Employee ID",
+      "emp-name": "Employee Name",
+      "emp-shift": ["Select Shift", "8 AM - 4:30 PM", "4:30 PM - 1 AM", "1 AM - 8 AM"],
+      "emp-status": ["Select Status", "Present", "Absent", "Casual Leave", "Paid Leave", "Weekly Off"],
+      "mark-attendance-button": "Mark Attendance",
+      "back-to-home-link": "← Back to Home",
+      "footer-text": "&copy; 2025 T-MILLS KAPPALOOR. All rights reserved."
+    },
+    ta: {
+      "page-title": "கையேடு கலந்துகொள் மார்க்",
+      "navbar-title": "டி-மில்ஸ் கப்பலூர்",
+      "home-link": "முகப்பு",
+      "view-report-link": "அறிக்கை பாருங்கள்",
+      "dashboard-link": "டாஷ்போர்டு",
+      "manual-link": "கையேடு குறிச்சொல்",
+      "manual-attendance-title": "கையேடு கலந்துகொள்",
+      "emp-id": "பணியாளர் ஐ.டி",
+      "emp-name": "பணியாளர் பெயர்",
+      "emp-shift": ["பதவி தேர்வு", "8 AM - 4:30 PM", "4:30 PM - 1 AM", "1 AM - 8 AM"],
+      "emp-status": ["நிலை தேர்வு", "பணியில்", "வெளியே", "சாதாரண விடுப்பு", "பணம் வழங்கும் விடுப்பு", "வாராந்திர விடுப்பு"],
+      "mark-attendance-button": "கலந்துகொள்",
+      "back-to-home-link": "← முதன்மை பக்கம்",
+      "footer-text": "&copy; 2025 டி-மில்ஸ் கப்பலூர். அனைத்து உரிமைகளும் பாதுகாக்கப்படுகின்றன."
+    }
+  };
+
+  function changeLanguage(event) {
+    const lang = event.target.value;
+    for (const [key, value] of Object.entries(translations[lang])) {
+      if (key === 'emp-shift' || key === 'emp-status') {
+        const selectElem = document.getElementById(key);
+        selectElem.innerHTML = '';
+        value.forEach(optionText => {
+          const option = document.createElement('option');
+          option.textContent = optionText;
+          selectElem.appendChild(option);
+        });
+      } else {
+        const elem = document.getElementById(key);
+        if (elem) {
+          elem.textContent = value;
+          if (elem.hasAttribute('placeholder')) {
+            elem.setAttribute('placeholder', value);
+          }
+        }
+      }
+    }
+  }
+</script>
+</body>
+</html>
